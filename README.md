@@ -19,7 +19,7 @@
 
 ```bash
 git clone https://github.com/L0puh/visitcounter_container 
-cd visit-counter
+cd visitcounter_container
 docker-compose up -d
 ```
 check `http://localhost:8000` in the browser or 
