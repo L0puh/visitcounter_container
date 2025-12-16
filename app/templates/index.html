@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Visit Counter</title>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+        <div class="error">
+            <h3>⚠️ Ошибка подключения к базе данных</h3>
+            <p>Не удалось подключиться к PostgreSQL</p>
+            <pre>{{ error }}</pre>
+        </div>
+        {% else %}
+        <h1>🌐 Visit Counter</h1>
+        <div class="count">{{ total_visits }}</div>
+        <div class="info">Total Visits Recorded</div>
+        <div class="last-visit">
+            <strong>Last visit:</strong> {{ last_visit }}
+        </div>
+        
+        <div class="info">
+            Каждое обновление страницы добавляет +1 к счетчику
+        </div>
+        {% endif %}
+        
+        <div class="buttons">
+            <a href="/" class="btn btn-primary">🔄 Обновить</a>
+        </div>
+        
+        {% if not error %}
+        <div class="instructions">
+            <h4>Информация:</h4>
+            <ul>
+                <li>Используется PostgreSQL для хранения данных</li>
+                <li>База данных: <strong>visitcounter</strong></li>
+                <li>Таблица: <strong>visits</strong></li>
+                <li>Каждая запись содержит ID и timestamp</li>
+                <li>Данные сохраняются между перезапусками сервера</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

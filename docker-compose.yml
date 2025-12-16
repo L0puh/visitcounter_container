@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: visit-counter-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-visitdb}
+      POSTGRES_USER: ${DB_USER:-visitor}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - visit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-visitor}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+    container_name: visit-counter-app
+    restart: always
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      DB_HOST: db  
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-visitdb}
+      DB_USER: ${DB_USER:-visitor}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      APP_PORT: 8000
+      APP_HOST: 0.0.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - visit-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  visit-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
