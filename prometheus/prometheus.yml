@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels: 
+          service: 'monitoring'
+
+  - job_name: 'visit-counter-app'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['app:8000']
+        labels: 
+          service: 'visit-counter'
+          app: 'flask-app'
+          environment: 'production'
+
+  - job_name: 'visit-counter-health'
+    metrics_path: /health
+    static_configs:
+      - targets: ['app:8000']
+        labels:  
+          check_type: 'http-health'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'app_health'
+        action: keep

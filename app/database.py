@@ -51,6 +51,20 @@ class Database:
         
         return True
 
+    def check_connection(self):
+        conn = None
+        try:
+            conn = self._connect()
+            if conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+                cursor.close()
+                return True
+            return False
+        except Exception as e:
+            return False
+
     def add_visit(self):
         conn = self._connect()
         if not conn:
